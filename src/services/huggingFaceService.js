@@ -12,7 +12,6 @@ async function callHuggingFace(modelUrl, text) {
       },
     }
   );
-  console.log(HF_TOKEN);
   return response.data;
 }
 
