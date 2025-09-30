@@ -5,13 +5,14 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const db = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl:
-    process.env.NODE_ENV === "production"
-      ? { rejectUnauthorized: false }
-      : false, // needed for Heroku SSL
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DATABASE,
+  ssl: { rejectUnauthorized: false }, // always required for Supabase
 });
-
+console.log(process.env.HOST);
 // Initialize tables if they don’t exist
 async function init() {
   await db.query(`
