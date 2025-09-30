@@ -1,38 +1,42 @@
 import { db } from "../db/database.js";
 
 const postModel = {
-  getAllPost: () => {
-    return db.prepare(`SELECT * FROM posts`).all();
+  getAll: async () => {
+    const res = await db.query(`SELECT * FROM posts`);
+    return res.rows;
   },
 
-  getPostById: (id) => {
-    return db.prepare(`SELECT * FROM posts WHERE id = ?`).get(id);
+  getById: async (id) => {
+    const res = await db.query(`SELECT * FROM posts WHERE id = $1`, [id]);
+    return res.rows[0];
   },
-  create: (userID, postContent, postTone) => {
-    return db
-      .prepare(
-        `INSERT INTO posts (userID, postContent, postTone) VALUES (?, ?, ?)`
-      )
-      .run(userID, postContent, postTone);
+
+  create: async (user_id, post_content, post_tone) => {
+    const res = await db.query(
+      `INSERT INTO posts (user_id, post_content, post_tone) 
+        VALUES ($1, $2, $3)
+        RETURNING *`,
+      [user_id, post_content, post_tone]
+    );
+
+    return res.rows[0];
+  },
+
+  update: async (id, user_id, post_content, post_tone) => {
+    const res = await db.query(
+      `UPDATE posts 
+        SET user_id = $1, post_content = $2, post_tone = $3 WHERE id = $4
+        RETURNING *`,
+      [user_id, post_content, post_tone, id]
+    );
+
+    return res.rows[0];
+  },
+
+  delete: async (id) => {
+    db.query(`DELETE FROM posts WHERE id = $1`, [id]);
+    return { message: `post ${id} deleted` };
   },
 };
-
-// export async function getAllPosts() {
-//   return db.prepare("SELECT * FROM posts ORDER BY createdAT DESC").all();
-// }
-
-// export async function getPostById(id) {
-//   return db.prepare("SELECT * FROM posts WHERE id = ?", [id]);
-// }
-
-// export async function createPost({ userID, postContent, postTone }) {
-//   const db = await initDB();
-//   const result = await db.run(
-//     "INSERT INTO posts (userID, postContent, postTone) VALUES (?, ?, ?)",
-//     [userID, postContent, postTone]
-//   );
-
-//   return { id: result.lastID, userID, postContent, postTone };
-// }
 
 export default postModel;

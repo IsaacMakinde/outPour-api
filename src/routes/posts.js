@@ -1,14 +1,13 @@
 import { Router } from "express";
-import {
-  getPosts,
-  getSinglePost,
-  addPost,
-} from "../controllers/postController.js";
+import postController from "../controllers/postController.js";
+import { verifyFirebaseToken } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
-router.get("/", getPosts);
-router.get("/:id", getSinglePost);
-router.post("/", addPost);
+router.get("/", postController.getPosts);
+router.get("/:id", postController.getPostById);
+router.post("/", verifyFirebaseToken, postController.createPost);
+router.put("/:id", verifyFirebaseToken, postController.updatePost);
+router.delete("/:id", verifyFirebaseToken, postController.delete);
 
 export default router;
