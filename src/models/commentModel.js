@@ -1,24 +1,39 @@
-import { db } from "../db/database.js";
+import supabase from "../db/supabaseClient.js";
 
 const commentModel = {
   getAll: async () => {
-    const res = db.query(`SELECT * FROM comments`);
-    return res.rows;
+    const { data, error } = supabase.from("comments").select("*");
+
+    if (error) {
+      console.log("Error getting all comments");
+      return null;
+    }
+    return data;
   },
 
   getById: async (id) => {
-    const res = await db.query(`SELECT * FROM comments WHERE id = $1`, [id]);
-    return res.rows[0];
+    const { data, error } = await supabase
+      .from("comments")
+      .select("*")
+      .eq("id", id);
+
+    if (error) {
+      console.log("Error getting comment");
+      return null;
+    }
+    return data;
   },
   create: async (user_id, post_id, comment_content, comment_tone) => {
-    const res = await db.query(
-      `INSERT INTO comments (user_id, post_id, comment_content, comment_tone) 
-        VALUES ($1, $2, $3, $4)
-        RETURNING *`,
-      [user_id, post_id, comment_content, comment_tone]
-    );
+    const { data, error } = await supabase
+      .from("comments")
+      .insert([{ user_id, post_id, comment_content, comment_tone }])
+      .select();
 
-    return res.rows[0];
+    if (error) {
+      console.log("Error creating comment");
+      return null;
+    }
+    return data;
   },
   update: async (id, user_id, post_id, comment_content, comment_tone) => {
     const res = await db.query(
@@ -27,12 +42,32 @@ const commentModel = {
         RETURNING *`,
       [user_id, post_id, comment_content, comment_tone, id]
     );
-    return res.row[0];
+
+    const { data, error } = await supabase
+      .from("comments")
+      .update({
+        user_id: user_id,
+        post_id: post_id,
+        comment_content: comment_content,
+        comment_tone: comment_tone,
+      })
+      .eq(id);
+
+    if (error) {
+      console.log("Error updating comment");
+      return null;
+    }
+    return data;
   },
 
   delete: async (id) => {
-    db.query(`DELETE FROM comments WHERE id = $1`, [id]);
-    return { message: `comment ${id} deleted` };
+    const { data, error } = supabase.from("posts").delete().eq("id", id);
+    if (error) {
+      console.log("Error deleting comment", id);
+      return null;
+    }
+
+    return data;
   },
 };
 

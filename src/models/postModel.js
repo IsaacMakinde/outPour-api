@@ -1,41 +1,72 @@
-import { db } from "../db/database.js";
+import supabase from "../db/supabaseClient.js";
 
 const postModel = {
   getAll: async () => {
-    const res = await db.query(`SELECT * FROM posts`);
-    return res.rows;
+    const { data, error } = await supabase.from("posts").select("*");
+
+    if (error) {
+      console.log("Error getting all posts");
+      return null;
+    }
+
+    return data;
   },
 
   getById: async (id) => {
     const res = await db.query(`SELECT * FROM posts WHERE id = $1`, [id]);
-    return res.rows[0];
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.log("Error getting post", id);
+      return null;
+    }
+    return data;
   },
 
   create: async (user_id, post_content, post_tone) => {
-    const res = await db.query(
-      `INSERT INTO posts (user_id, post_content, post_tone) 
-        VALUES ($1, $2, $3)
-        RETURNING *`,
-      [user_id, post_content, post_tone]
-    );
+    const { data, error } = await supabase
+      .from("posts")
+      .insert([{ user_id, post_content, post_tone }])
+      .select();
 
-    return res.rows[0];
+    if (error) {
+      console.error("Error inserting post", error.message);
+      return null;
+    }
+
+    return data[0];
   },
 
   update: async (id, user_id, post_content, post_tone) => {
-    const res = await db.query(
-      `UPDATE posts 
-        SET user_id = $1, post_content = $2, post_tone = $3 WHERE id = $4
-        RETURNING *`,
-      [user_id, post_content, post_tone, id]
-    );
+    const { data, error } = await supabase
+      .from("posts")
+      .update({
+        user_id: user_id,
+        post_content: post_content,
+        post_tone: post_tone,
+      })
+      .eq("id", id)
+      .select();
 
-    return res.rows[0];
+    if (error) {
+      console.log("Error updating post", id);
+      return null;
+    }
+    return data;
   },
 
   delete: async (id) => {
-    db.query(`DELETE FROM posts WHERE id = $1`, [id]);
-    return { message: `post ${id} deleted` };
+    const { data, error } = supabase.from(`posts`).delete().eq("id", id);
+
+    if (error) {
+      console.log("Error deleting post", id);
+      return null;
+    }
+    return data;
   },
 };
 
