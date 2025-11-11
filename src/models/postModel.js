@@ -13,7 +13,6 @@ const postModel = {
   },
 
   getById: async (id) => {
-    const res = await db.query(`SELECT * FROM posts WHERE id = $1`, [id]);
     const { data, error } = await supabase
       .from("posts")
       .select("*")
