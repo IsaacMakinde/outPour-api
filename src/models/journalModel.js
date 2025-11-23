@@ -62,6 +62,7 @@ const journalModel = {
         tone: tone,
         is_private,
         word_count,
+        updated_at: new Date(),
       })
       .eq("id", id)
       .select();
@@ -85,6 +86,7 @@ const journalModel = {
           is_private,
           word_count,
           entry_date: new Date().toISOString().split("T")[0], // today's date
+          updated_at: new Date(),
         },
         { onConflict: ["user_id", "entry_date"] } // important
       )
