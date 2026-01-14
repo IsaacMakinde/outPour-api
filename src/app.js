@@ -29,7 +29,7 @@ app.use("/api/reflections", reflectionsRoutes);
 app.use(errorHandler);
 
 app.get("/", (req, res) => {
-  res.json({ message: "API is running 🚀" });
+  res.json({ message: "API is running" });
 });
 
 export default app;
