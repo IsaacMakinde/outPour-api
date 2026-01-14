@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # 4. Install dependencies
-RUN npm install
+RUN npm install --production
 
 # 5. Copy application code
 COPY . .
@@ -18,5 +18,6 @@ COPY . .
 EXPOSE 3000
 
 # 7. Start the application
-CMD ["npm", "start"]
+CMD ["node", "src/server.js"]
+
 
