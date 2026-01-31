@@ -26,16 +26,15 @@ const reflectionController = {
 
   createReflection: async (req, res, next) => {
     try {
-      const { user_id, user_name, tone, content, word_count, reference_verse } =
-        req.body;
-      const newReflection = await reflectionsModel.upsert(
-        user_id,
-        user_name,
+      const { tone, content, word_count, reference_verse } = req.body;
+      const newReflection = await reflectionsModel.upsert({
         content,
         tone,
         reference_verse,
-        word_count
-      );
+        word_count,
+        user_id: req.user.creator_uid,
+        user_name: req.user.display_name,
+      });
       return res.status(200).json(newReflection);
     } catch (error) {
       console.log(error);

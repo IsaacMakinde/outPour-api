@@ -41,14 +41,14 @@ const reflectionsModel = {
     return data;
   },
 
-  upsert: async (
-    user_id,
-    user_name,
+  upsert: async ({
     content,
     tone,
     reference_verse,
-    word_count
-  ) => {
+    word_count,
+    user_id,
+    user_name,
+  }) => {
     const { data, error } = await supabase
       .from("reflections")
       .upsert(

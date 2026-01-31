@@ -6,6 +6,9 @@ import commentRoutes from "./routes/comments.js";
 import journalRoutes from "./routes/journals.js";
 import reflectionsRoutes from "./routes/reflections.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import guestRoutes from "./routes/guests.js";
+import eventRoutes from "./routes/event.js";
+import userRoutes from "./routes/user.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -25,6 +28,9 @@ app.use("/api/analysis", analysisRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/journals", journalRoutes);
 app.use("/api/reflections", reflectionsRoutes);
+app.use("/api/events", eventRoutes);
+app.use("/api/users", userRoutes);
+app.use("api/guests", guestRoutes);
 
 app.use(errorHandler);
 
